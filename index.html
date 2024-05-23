@@ -1,13 +1,65 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="https://cdn-icons-png.flaticon.com/128/7771/7771736.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sub-App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Public Space with Chatbot, Notifications, and Question Submission</title>
+<style>
+    /* Add your custom CSS styles here */
+</style>
+</head>
+<body>
+<h1>Public Space with Chatbot, Notifications, and Question Submission</h1>
+<div id="chatbox"></div>
+<textarea id="messageInput" placeholder="Type your message here"></textarea>
+<button onclick="sendMessage()">Send</button>
+
+<h2>Ask a Question</h2>
+<textarea id="questionText" placeholder="Enter your question here"></textarea>
+<input type="file" id="videoUpload" accept="video/*">
+<button onclick="submitQuestion()">Submit Question</button>
+
+<script>
+function sendMessage() {
+    // Function for sending messages to the chat interface
+    // This function can remain the same as before
+}
+
+function submitQuestion() {
+    const questionText = document.getElementById('questionText').value;
+    const videoFile = document.getElementById('videoUpload').files[0];
+
+    // Create a FormData object to send the question and video file
+    const formData = new FormData();
+    formData.append('question_text', questionText);
+    formData.append('video', videoFile);
+
+    // Send the data to the backend using fetch API
+    fetch('/submit_question', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(result => {
+        console.log('Question submitted successfully:', result);
+        showNotification('Question Submitted', 'Your question has been submitted successfully');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function showNotification(title, message) {
+    if (Notification.permission === 'granted') {
+        new Notification(title, { body: message });
+    } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                new Notification(title, { body: message });
+            }
+        });
+    }
+}
+</script>
+</body>
 </html>
